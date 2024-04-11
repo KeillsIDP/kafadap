@@ -30,7 +30,7 @@ public class Game {
     @NonNull
     private int price;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "publishers", referencedColumnName = "id")
     private Publisher publisher;
 }

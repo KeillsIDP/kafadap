@@ -51,8 +51,80 @@
         <h2>Введите BODY запроса</h2>
         <textarea id="body" name="body" type="text"></textarea>
         </br>
-        <button class="button" type="button" onclick="sendForm()">Отправить запрос</button>
+        <button class="button" type="button" onclick=sendForm()>Отправить запрос</button>
     </form>
 </div>
+
+<script th:inline="javascript">
+    function sendForm(){
+        var method = document.getElementById('method').value;
+        var url = document.getElementById('url').value;
+        var body = document.getElementById('body').value;
+        var headers = {}; // Преобразуем данные из формы в объект Map
+        var headersKeys = document.querySelectorAll('[id^="header_key"]');
+        var headersValues = document.querySelectorAll('[id^="header_value"]');
+        for (var i = 0; i < headersKeys.length; i++) {
+            var headerName = headersKeys[i].value;
+            var headerValue = headersValues[i].value;
+            if (!headerValue) {
+                continue; // Пропускаем данную итерацию, если headerValue равен null
+            }
+
+            // Разбиваем headerValue на список по разделителям ";" или ","
+            var headerValuesList = headerValue.split(/[,;]/);
+
+            for (var j = 0; j < headerValuesList.length; j++) {
+                var value = headerValuesList[j].trim(); // Удаляем лишние пробелы по краям
+                if (headerName in headers) {
+                    headers[headerName].push(value);
+                } else {
+                    headers[headerName] = [value];
+                }
+            }
+        }
+        var parameters = {}; // Преобразуем данные из формы в объект Map
+        var parametersKeys = document.querySelectorAll('[id^="parameter_key"]');
+        var parametersValues = document.querySelectorAll('[id^="parameter_value"]');
+        for (var i = 0; i < parametersKeys.length; i++) {
+            var parameterName = parametersKeys[i].value;
+            var parameterValue = parametersValues[i].value;
+            parameters[parameterName] = parameterValue;
+        }
+
+        // Создаем объект JsonDto
+        var jsonDto = {
+            method: method,
+            url: url,
+            body: body,
+            headers: headers,
+            parameters: parameters
+        };
+
+        // Преобразуем объект в JSON
+        var jsonDtoJson = JSON.stringify(jsonDto);
+        console.log(jsonDtoJson);
+
+        var host = /*[[${@environment.getProperty('kafka.host.javascript')}]]*/ '';
+        var apiUrl = 'http://' + host + '/api/kafka/publish';
+
+        console.log(apiUrl);
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonDtoJson
+        })
+            .then(response => {
+            // Handle the response
+            console.log(response);
+        })
+            .catch(error => {
+            // Handle any errors
+            console.error('Error:', error);
+        });
+    }
+</script>
 </body>
 </html>

@@ -23,33 +23,29 @@ public class GameServiceImpl implements GameService{
     private PublisherRepo publisherRepo;
 
     @Override
-    public void saveGame(Game game) {
-        gameRepo.save(game);
+    public Game saveGame(Game game) {
+        return gameRepo.save(game);
     }
 
     @Override
-    public void saveGame(Game game, Long publisherId) {
+    public Game saveGame(Game game, Long publisherId) {
         game.setPublisher(publisherRepo.findById(publisherId).orElseThrow(() -> new PublisherNotFoundException("Publisher withd id = " + publisherId + " not found")));
-        gameRepo.save(game);
+        return gameRepo.save(game);
     }
 
     @Override
-    public void editGamePrice(Long id, int price) {
-        gameRepo.findById(id).ifPresentOrElse(game -> {
-            game.setPrice(price);
-            gameRepo.save(game);
-            }, () -> {throw new GameNotFoundException("Game with id = " + id + " not found");});
+    public Game editGamePrice(Long id, int price) {
+        Game game = gameRepo.findById(id).orElseThrow(() -> new GameNotFoundException("Game with id = " + id + " not found"));
+        game.setPrice(price);
+        return gameRepo.save(game);
     }
 
     @Override
-    public void editGamePublisher(Long id, Long publisherId) {
-        gameRepo.findById(id).ifPresentOrElse(game -> {
-            if(publisherId!=null)
-                game.setPublisher(publisherRepo.findById(publisherId).orElseThrow(() -> new PublisherNotFoundException("Publisher withd id = " + publisherId + " not found")));
-            else
-                game.setPublisher(null);
-            gameRepo.save(game);
-        }, () -> {throw new GameNotFoundException("Game with id = " + id + " not found");});
+    public Game editGamePublisher(Long id, Long publisherId) {
+        Game game = gameRepo.findById(id).orElseThrow(() -> new GameNotFoundException("Game with id = " + id + " not found"));
+        game.setPublisher(publisherId!=null ? publisherRepo.findById(publisherId)
+                .orElseThrow(() -> new PublisherNotFoundException("Publisher withd id = " + publisherId + " not found")) : null);
+        return gameRepo.save(game);
     }
 
     @Override
@@ -70,6 +66,9 @@ public class GameServiceImpl implements GameService{
 
     @Override
     public List<Game> getGamesByFilter(GameFilter filter, String value) {
+        if(filter == null)
+            throw new GameFilterIsIncorrectException("Filter is incorrect");
+
         try {
             switch (filter) {
                 case GameFilter.LESS_THEN:
@@ -83,8 +82,9 @@ public class GameServiceImpl implements GameService{
                 default:
                     throw new GameFilterIsIncorrectException("Filter is incorrect");
             }
-        }
-        catch (Exception e) {
+        } catch (GameFilterIsIncorrectException e) {
+            throw new GameFilterIsIncorrectException("Filter is incorrect");
+        } catch (Exception e) {
             throw new GameFilterValueIsIncorrectException("Value is incorrect");
         }
     }

@@ -13,6 +13,10 @@ public class KafkaTopicConfig {
     @Value("${spring.kafka.json-topic.name}")
     private String jsonTopic;
 
+    /**
+     * Метод для создания нового топика Kafka с указанным именем.
+     * @return {@link org.apache.kafka.clients.admin.NewTopic} Kafka с указанным именем.
+     */
     @Bean
     public NewTopic jsonTopic(){
         return TopicBuilder.name(jsonTopic)

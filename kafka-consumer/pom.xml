@@ -18,10 +18,10 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>me.keills</groupId>
-            <artifactId>KafkaAdapter</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

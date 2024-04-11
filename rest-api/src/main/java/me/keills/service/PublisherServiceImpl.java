@@ -12,10 +12,10 @@ public class PublisherServiceImpl implements PublisherService {
     @Autowired
     private PublisherRepo publisherRepo;
     @Override
-    public void savePublisher(Publisher publisher) {
+    public Publisher savePublisher(Publisher publisher) {
         if(publisher.getName()==null || publisher.getName().length()==0)
             throw new PublisherNameNotPresent("Publisher name can't be empty");
-        publisherRepo.save(publisher);
+        return publisherRepo.save(publisher);
     }
 
     @Override

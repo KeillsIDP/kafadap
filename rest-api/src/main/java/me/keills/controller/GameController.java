@@ -15,12 +15,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+/**
+ * Контроллер для обработки HTTP-запросов, связанных с играми.
+ */
 @RestController
 @RequestMapping("api/game")
 public class GameController {
     @Autowired
     private GameService gameService;
 
+    /**
+     * Метод для сохранения игры.
+     * @param game {@linkplain Game} - объект игры для сохранения
+     * @return {@linkplain ResponseEntity} с сообщением об успешном сохранении или ошибкой.
+     */
     @PostMapping("/save-json")
     public ResponseEntity<String> saveGame(@RequestBody Game game){
         try{
@@ -32,6 +40,14 @@ public class GameController {
         }
     }
 
+    /**
+     * Метод для сохранения игры с указанными параметрами.
+     * @param gameName {@linkplain String} - название игры
+     * @param releaseDate {@linkplain String} - дата выпуска игры
+     * @param price {@linkplain Integer} - цена игры
+     * @param publisherId {@linkplain Long} - идентификатор издателя (необязательный)
+     * @return {@linkplain ResponseEntity} с сообщением об успешном сохранении или ошибкой.
+     */
     @PostMapping("/save")
     public ResponseEntity<String> saveGame(@RequestParam("gameName") String gameName,
                                            @RequestParam("releaseDate") String releaseDate,
@@ -50,6 +66,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Метод для изменения цены игры.
+     * @param id {@linkplain Long} - идентификатор игры
+     * @param price {@linkplain Integer} - новая цена игры
+     * @return {@linkplain ResponseEntity} с сообщением об успешном изменении цены или ошибкой.
+     */
     @PostMapping("/edit")
     public ResponseEntity<String> editGamePrice(@RequestParam("id") Long id,@RequestParam("price") int price){
         try{
@@ -62,6 +84,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Метод для удаления игры.
+     * @param id {@linkplain Long} - идентификатор игры
+     * @return {@linkplain ResponseEntity} с сообщением об успешном удалении игры или ошибкой.
+     */
     @PostMapping("/edit-publisher")
     public ResponseEntity<String> editGamePublisher(@RequestParam("id") Long id,@RequestParam(name = "publisherId",required = false) Long publisherId){
         try{
@@ -89,6 +116,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Метод для получения игры по идентификатору.
+     * @param id {@linkplain Long} - идентификатор игры
+     * @return {@linkplain ResponseEntity} с объектом игры или ошибкой, если игра не найдена.
+     */
     @GetMapping("/get")
     public ResponseEntity<?> getGame(@RequestParam("id") Long id){
         try{
@@ -100,6 +132,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Метод для получения игры по идентификатору издателя.
+     * @param id {@linkplain Long} - идентификатор издателя
+     * @return {@linkplain ResponseEntity} с листом игр или ошибкой, если издатель не найдена.
+     */
     @GetMapping("/get-by-publisher")
     public ResponseEntity<?> getGamesByPublisher(@RequestParam("id") Long id){
         try{
@@ -111,6 +148,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Метод для получения списка игр по фильтру.
+     * @param filter {@linkplain GameFilter } - фильтр для поиска игр
+     * @param value {@linkplain String} - значение фильтра
+     * @return {@linkplain ResponseEntity} со списком игр, удовлетворяющих фильтру, или ошибкой.
+     */
     @GetMapping("/get-by-filter")
     public ResponseEntity<?> getGamesByFilter(@RequestParam("filter") GameFilter filter, @RequestParam("value") String value){
         try{

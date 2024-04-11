@@ -1,6 +1,6 @@
 package me.keills.service;
 
-import me.keills.KafkaAdapter.payload.Json;
+import me.keills.payload.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,35 +18,31 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Сервис для отправки HTTP-запросов.
+ */
 @Service
 public class HttpMessengerService {
     private final Logger LOGGER = LoggerFactory.getLogger(HttpMessengerService.class);
+
+    /**
+     * Метод для отправки HTTP-запроса на указанный URL с заданными параметрами, заголовками и телом.
+     * @param json {@link Json} объект с информацией о запросе (URL, параметры, заголовки, тело и метод).
+     * @return {@link String} с ответом от сервера или "" в случае ошибки.
+     */
     public String sendRequest(Json json) {
         try {
 
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.append(json.getUrl());
 
-//            if(json.getParameters().size()!=0) {
-//                urlBuilder.append("?");
-//                for (Map.Entry<String, String> entry : json.getParameters().entrySet())
-//                    urlBuilder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-//            }
-//
-//            HttpClient httpClient = HttpClient.newHttpClient();
-//            HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
-//                    .method(json.getMethod(), HttpRequest.BodyPublishers.ofString(json.getBody()))
-//                    .uri(URI.create(urlBuilder.toString()));
-//
-//            if(json.getHeaders().size()!=0) {
-//                for (Map.Entry<String, List<String>> entry : json.getHeaders().entrySet())
-//                    httpRequestBuilder.setHeader(entry.getKey(), entry.getValue().toString());
-//            }
-//
-//            HttpRequest httpRequest = httpRequestBuilder.build();
-//            HttpResponse httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-//
-//            return (String) httpResponse.body();
+            if(json.getParameters().size()!=0) {
+                urlBuilder.append("?");
+                for (Map.Entry<String, String> entry : json.getParameters().entrySet())
+                    urlBuilder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+                urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+            }
+
             URL url = new URL(urlBuilder.toString());
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod(json.getMethod());
@@ -79,7 +75,7 @@ public class HttpMessengerService {
                 while ((responseLine = br.readLine()) != null) {
                     response.append(responseLine.trim());
                 }
-                LOGGER.info("#### -> HTTP response ->" + response.toString());
+                LOGGER.info("#### -> HTTP response ->" + response);
                 httpURLConnection.disconnect();
             }
             return response.toString();
@@ -87,9 +83,6 @@ public class HttpMessengerService {
             LOGGER.error("#### -> ERROR with HTTP request -> " + e.getMessage());
 
         }
-//        catch (InterruptedException e) {
-//            LOGGER.error("#### -> ERROR with HTTP request -> " + e.getMessage());
-//        }
         return "";
     }
 }

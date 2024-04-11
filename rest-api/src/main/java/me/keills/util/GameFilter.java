@@ -1,8 +1,11 @@
 package me.keills.util;
 
+/**
+ * Перечисление фильтров для игр.
+ */
 public enum GameFilter {
-    LESS_THEN,
-    GREATER_THEN,
-    BEFORE,
-    AFTER
+    LESS_THEN, // Цена меньше чем указанное значение
+    GREATER_THEN, // Цена больше чем указанное значение
+    BEFORE, // Дата выпуска до указанной даты
+    AFTER // Дата выпуска после указанной даты
 }
